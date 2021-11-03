@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 9bf96d9db4d039e43a35d0275db7689a
+  m_SerializeEntries:
+  - m_GUID: 82194e9351cc7ae46bd695e8c05b5c3f
+    m_Address: Assets/Sprites/TestAddressable.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d91c4ae7cd1ad76478e31695d9502e05
+    m_Address: Assets/Prefabs/Components/Wheels/Wheel_00.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7b8c73446d8e1b6428dbbfdc34a80868
+    m_Address: Assets/Sprites/Components/TestBody.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6bfbf8d703e665243817fb888525db31
+    m_Address: Assets/Sprites/Components/TestWheel.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 0626aeabd44886345be9c2b3d75f5862
+    m_Address: Assets/Prefabs/Components/Wheels
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 086df84eb3011da4bbc0fce845cafe46
+    m_Address: Assets/Prefabs/Components/Weapons/Weapon_00.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 93e25b6ee747b1b4595fd91a283669e0
+    m_Address: Assets/Sprites/Components/TestWeapon.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ca18ad99fe858394abe2324969950d29
+    m_Address: Assets/Prefabs/Components/Bodies/Body_00.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0e4f58331d675cb43b35cd7dee7f0f27, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e1f7aacdddb8855438f9267d3f785bbe, type: 2}
+    - {fileID: 11400000, guid: 84858803de0d35041bf999037ec5115e, type: 2}
