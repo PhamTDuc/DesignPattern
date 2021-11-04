@@ -59,18 +59,18 @@ namespace Guinea.Core.Components
             yield return new WaitForSeconds(m_ammunition.reloadTime);
             m_isReloading = false;
         }
+
         public void AimTo(Vector3 target)
         {
-            Vector3 direction = transform.root.InverseTransformDirection(target - m_aiming.position);
-            Vector3 right = Vector3.Cross(direction, Vector3.up);
-            Vector3 up = Vector3.Cross(direction, right);
-            Quaternion rotation = Quaternion.LookRotation(direction, up);
+            Vector3 direction = target - m_aiming.position;
 
-            Quaternion aiming_rot = Quaternion.Euler(rotation.eulerAngles.x, 0f, 0f);
-            Quaternion base_rot = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
+            Vector3 pitchVector = Vector3.ProjectOnPlane(direction, m_aiming.right);
+            float pitch = Vector3.SignedAngle(m_aiming.forward, pitchVector, m_aiming.right);
+            m_aiming.RotateAround(m_aiming.position, m_aiming.right, pitch); // TODO: Using clamp angles
 
-            m_aiming.localRotation = aiming_rot;
-            transform.localRotation = base_rot;
+            Vector3 yawVector = Vector3.ProjectOnPlane(direction, transform.up);
+            float yaw = Vector3.SignedAngle(transform.forward, yawVector, transform.up);
+            transform.RotateAround(transform.position, transform.up, yaw); // TODO: Using clamp angles
         }
     }
 }
