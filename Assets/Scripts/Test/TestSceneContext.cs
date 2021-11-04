@@ -25,6 +25,7 @@ namespace Guinea.Test
 
             Container.Bind<SharedInteraction>().FromComponentInHierarchy().AsSingle();
             Container.Bind<ManipulationManager>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<InventoryLoader>().FromComponentInHierarchy().AsSingle();
 
 
             #region Initialize

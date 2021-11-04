@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Guinea.Core.Inventory;
 
 namespace Guinea.Core.Components
 {
     public class ComponentBase : MonoBehaviour, IEnumerable
     {
         [SerializeField] ComponentType m_type;
+        [SerializeField] ItemType m_itemType;
         [SerializeField] AttachType m_attachType;
         [SerializeField] float m_weight;
 
@@ -15,6 +17,7 @@ namespace Guinea.Core.Components
         // event Action OnDetach;
 
         public ComponentType Type => m_type;
+        public ItemType ItemType => m_itemType;
         public AttachType AttachType => m_attachType;
         public float Weight => m_weight;
         public void AddComponent(ComponentBase component)
