@@ -25,17 +25,15 @@ namespace Guinea.Core.Interactions
 
         void OnEnable()
         {
-            InputManager.Map.ComponentBuilder.Select.performed += OnSelect;
-            // InputManager.Map.ComponentBuilder.DeSelect.performed += ctx => Cancel();
-            InputManager.Map.ComponentBuilder.Point.performed += OnExecuteCallback;
-            // InputManager.SetActionMap(InputManager.Map.ComponentBuilder, true);
+            InputManager.Map.EntityBuilder.Select.performed += OnSelect;
+            InputManager.Map.EntityBuilder.Point.performed += OnExecuteCallback;
         }
 
         void OnDisable()
         {
-            InputManager.Map.ComponentBuilder.Select.performed -= OnSelect;
-            // InputManager.Map.ComponentBuilder.DeSelect.performed -= ctx => Cancel();
-            InputManager.Map.ComponentBuilder.Point.performed -= OnExecuteCallback;
+            InputManager.Map.EntityBuilder.Select.performed -= OnSelect;
+            // InputManager.Map.EntityBuilder.DeSelect.performed -= ctx => Cancel();
+            InputManager.Map.EntityBuilder.Point.performed -= OnExecuteCallback;
         }
 
         void OnSelect(InputAction.CallbackContext context)
@@ -44,7 +42,7 @@ namespace Guinea.Core.Interactions
             if (Physics.Raycast(ray, out RaycastHit hit, 100, m_selectionLayer))
             {
                 Transform selection = hit.transform;
-                Debug.Log($"OnSelect Invoke: {selection.name}");
+                Commons.Logger.Log($"OnSelect Invoke: {selection.name}");
                 bool isNotTag = String.IsNullOrEmpty(m_tag);
                 if (!isNotTag && selection.CompareTag(m_tag) || isNotTag)
                 {
@@ -97,7 +95,7 @@ namespace Guinea.Core.Interactions
 
         public Ray GetRayFromMousePosition()
         {
-            Vector3 mousePos = InputManager.Map.ComponentBuilder.Point.ReadValue<Vector2>();
+            Vector3 mousePos = InputManager.Map.EntityBuilder.Point.ReadValue<Vector2>();
             mousePos.z = m_camera.nearClipPlane;
             return m_camera.ScreenPointToRay(mousePos);
         }

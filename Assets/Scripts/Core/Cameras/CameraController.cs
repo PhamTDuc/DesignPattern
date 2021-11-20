@@ -21,21 +21,21 @@ namespace Guinea.Core
         InputAction m_cameraNavigate;
         void Awake()
         {
-            m_cameraNavigate = InputManager.Map.ComponentBuilder.CameraNavigate;
+            m_cameraNavigate = InputManager.Map.EntityBuilder.CameraNavigate;
             m_invertFactorX = m_invertX ? -1 : 1;
             m_invertFactorY = m_invertY ? -1 : 1;
         }
 
         void OnEnable()
         {
-            InputManager.Map.ComponentBuilder.CameraLook.performed += OnCameraLook;
+            InputManager.Map.EntityBuilder.CameraLook.performed += OnCameraLook;
             // m_cameraNavigate.Enable();
         }
 
 
         void OnDisable()
         {
-            InputManager.Map.ComponentBuilder.CameraLook.performed -= OnCameraLook;
+            InputManager.Map.EntityBuilder.CameraLook.performed -= OnCameraLook;
             // m_cameraNavigate.Disable();
         }
 
@@ -64,7 +64,7 @@ namespace Guinea.Core
 
         private void OnCameraLook(InputAction.CallbackContext context)
         {
-            Vector2 mouseDelta = InputManager.Map.ComponentBuilder.CameraLook.ReadValue<Vector2>();
+            Vector2 mouseDelta = InputManager.Map.EntityBuilder.CameraLook.ReadValue<Vector2>();
             CameraLook(mouseDelta);
         }
 

@@ -9,12 +9,12 @@ namespace Commons
         //-----------------------------------
         //--------------------- Log , warning, 
 
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void Log(object message)
         {
             UnityEngine.Debug.Log(message);
         }
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void LogIf(bool condition, object message)
         {
             if (condition)
@@ -22,12 +22,12 @@ namespace Commons
                 UnityEngine.Debug.Log(message);
             }
         }
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void Log(string format, params object[] args)
         {
             UnityEngine.Debug.Log(string.Format(format, args));
         }
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void LogIf(bool condition, string format, params object[] args)
         {
             if (condition)
@@ -35,19 +35,19 @@ namespace Commons
                 UnityEngine.Debug.Log(string.Format(format, args));
             }
         }
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void LogWarning(object message)
         {
             UnityEngine.Debug.LogWarning(message);
         }
 
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void LogWarning(object message, UnityEngine.Object context)
         {
             UnityEngine.Debug.LogWarning(message, context);
         }
 
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void LogWarning(UnityEngine.Object context, string format, params object[] args)
         {
             UnityEngine.Debug.LogWarning(string.Format(format, args), context);
@@ -55,19 +55,19 @@ namespace Commons
         #endregion
 
 
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void WarningUnless(bool condition, object message)
         {
             if (!condition) UnityEngine.Debug.LogWarning(message);
         }
 
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void WarningUnless(bool condition, object message, UnityEngine.Object context)
         {
             if (!condition) UnityEngine.Debug.LogWarning(message, context);
         }
 
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void WarningUnless(bool condition, UnityEngine.Object context, string format, params object[] args)
         {
             if (!condition) UnityEngine.Debug.LogWarning(string.Format(format, args), context);
@@ -78,21 +78,21 @@ namespace Commons
         //------------- Assert ------------------------
 
         /// Throw an exception if condition = false
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void Assert(bool condition)
         {
             if (!condition) throw new UnityException();
         }
 
         /// Throw an exception if condition = false, show message on console's log
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void Assert(bool condition, string message)
         {
             UnityEngine.Debug.Assert(condition, message);
         }
 
         /// Throw an exception if condition = false, show message on console's log
-        [Conditional("DEVELOPMENT_BUILD")]
+        [Conditional("DEVELOPMENT")]
         public static void Assert(bool condition, string format, params object[] args)
         {
             UnityEngine.Debug.Assert(condition, string.Format(format, args));

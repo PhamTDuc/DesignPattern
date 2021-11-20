@@ -7,6 +7,7 @@ namespace Guinea.Core.UI
         MAIN_SETTING,
         MAIN_KEYBINDING,
         MAIN_STATS,
+        MAIN_TAB_MENU,
         // MAIN_NEWGAME,
         // MAIN_EXIT,
     }

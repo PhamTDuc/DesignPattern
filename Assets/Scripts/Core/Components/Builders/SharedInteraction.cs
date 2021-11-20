@@ -66,7 +66,7 @@ namespace Guinea.Core.Components
                 if (frame != null)
                 {
                     m_root = frame;
-                    Debug.Log($"SetEntityRoot:{frame.gameObject.name}");
+                    Commons.Logger.Log($"SetEntityRoot:{frame.gameObject.name}");
                 }
             }
         }

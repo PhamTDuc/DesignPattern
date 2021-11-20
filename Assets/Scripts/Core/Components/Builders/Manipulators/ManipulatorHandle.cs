@@ -15,11 +15,13 @@ namespace Guinea.Core.Components
         public SpaceType Space => m_spaceType;
 
         MeshRenderer m_renderer;
+        MoveManipulator m_manipulator;
 
         static int s_colorID = Shader.PropertyToID("_Color");
         void Awake()
         {
             m_renderer = GetComponent<MeshRenderer>();
+            m_manipulator = GetComponentInParent<MoveManipulator>();
         }
 
         public void OnPointerEnter()
@@ -28,7 +30,8 @@ namespace Guinea.Core.Components
             m_overlayMaterial.SetVector(s_colorID, m_color);
             materials.Add(m_overlayMaterial);
             m_renderer.sharedMaterials = materials.ToArray();
-            // Debug.Log($"OnPointerEnter(): {gameObject.name}");
+            m_manipulator.Handle = m_handleType;
+            m_manipulator.Space = m_spaceType;
         }
 
         public void OnPointerExit()
@@ -36,7 +39,6 @@ namespace Guinea.Core.Components
             List<Material> materials = m_renderer.sharedMaterials.ToList();
             materials.Remove(m_overlayMaterial);
             m_renderer.sharedMaterials = materials.ToArray();
-            // Debug.Log($"OnPointerExit(): {gameObject.name}");
         }
 
         public enum HandleType

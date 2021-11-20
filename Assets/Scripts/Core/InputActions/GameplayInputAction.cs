@@ -562,7 +562,7 @@ namespace Guinea.Core
             ]
         },
         {
-            ""name"": ""ComponentBuilder"",
+            ""name"": ""EntityBuilder"",
             ""id"": ""4b3bcec9-86f7-4e23-ac56-e3a0b7235669"",
             ""actions"": [
                 {
@@ -594,12 +594,21 @@ namespace Guinea.Core
                 },
                 {
                     ""name"": ""Point"",
-                    ""type"": ""Value"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""b33c3a6f-f495-4726-806b-b0f27bf6c86e"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CameraZoom"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""5010e26a-c82e-4dee-9590-02f986e15b32"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -688,6 +697,17 @@ namespace Guinea.Core
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2af2c566-2040-4f1a-99c8-fee3ce2f29a4"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraZoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -860,12 +880,13 @@ namespace Guinea.Core
             m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
             m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
             m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
-            // ComponentBuilder
-            m_ComponentBuilder = asset.FindActionMap("ComponentBuilder", throwIfNotFound: true);
-            m_ComponentBuilder_CameraLook = m_ComponentBuilder.FindAction("CameraLook", throwIfNotFound: true);
-            m_ComponentBuilder_CameraNavigate = m_ComponentBuilder.FindAction("CameraNavigate", throwIfNotFound: true);
-            m_ComponentBuilder_Select = m_ComponentBuilder.FindAction("Select", throwIfNotFound: true);
-            m_ComponentBuilder_Point = m_ComponentBuilder.FindAction("Point", throwIfNotFound: true);
+            // EntityBuilder
+            m_EntityBuilder = asset.FindActionMap("EntityBuilder", throwIfNotFound: true);
+            m_EntityBuilder_CameraLook = m_EntityBuilder.FindAction("CameraLook", throwIfNotFound: true);
+            m_EntityBuilder_CameraNavigate = m_EntityBuilder.FindAction("CameraNavigate", throwIfNotFound: true);
+            m_EntityBuilder_Select = m_EntityBuilder.FindAction("Select", throwIfNotFound: true);
+            m_EntityBuilder_Point = m_EntityBuilder.FindAction("Point", throwIfNotFound: true);
+            m_EntityBuilder_CameraZoom = m_EntityBuilder.FindAction("CameraZoom", throwIfNotFound: true);
             // Operator
             m_Operator = asset.FindActionMap("Operator", throwIfNotFound: true);
             m_Operator_Cancel = m_Operator.FindAction("Cancel", throwIfNotFound: true);
@@ -1043,44 +1064,49 @@ namespace Guinea.Core
         }
         public UIActions @UI => new UIActions(this);
 
-        // ComponentBuilder
-        private readonly InputActionMap m_ComponentBuilder;
-        private IComponentBuilderActions m_ComponentBuilderActionsCallbackInterface;
-        private readonly InputAction m_ComponentBuilder_CameraLook;
-        private readonly InputAction m_ComponentBuilder_CameraNavigate;
-        private readonly InputAction m_ComponentBuilder_Select;
-        private readonly InputAction m_ComponentBuilder_Point;
-        public struct ComponentBuilderActions
+        // EntityBuilder
+        private readonly InputActionMap m_EntityBuilder;
+        private IEntityBuilderActions m_EntityBuilderActionsCallbackInterface;
+        private readonly InputAction m_EntityBuilder_CameraLook;
+        private readonly InputAction m_EntityBuilder_CameraNavigate;
+        private readonly InputAction m_EntityBuilder_Select;
+        private readonly InputAction m_EntityBuilder_Point;
+        private readonly InputAction m_EntityBuilder_CameraZoom;
+        public struct EntityBuilderActions
         {
             private @GameplayInputAction m_Wrapper;
-            public ComponentBuilderActions(@GameplayInputAction wrapper) { m_Wrapper = wrapper; }
-            public InputAction @CameraLook => m_Wrapper.m_ComponentBuilder_CameraLook;
-            public InputAction @CameraNavigate => m_Wrapper.m_ComponentBuilder_CameraNavigate;
-            public InputAction @Select => m_Wrapper.m_ComponentBuilder_Select;
-            public InputAction @Point => m_Wrapper.m_ComponentBuilder_Point;
-            public InputActionMap Get() { return m_Wrapper.m_ComponentBuilder; }
+            public EntityBuilderActions(@GameplayInputAction wrapper) { m_Wrapper = wrapper; }
+            public InputAction @CameraLook => m_Wrapper.m_EntityBuilder_CameraLook;
+            public InputAction @CameraNavigate => m_Wrapper.m_EntityBuilder_CameraNavigate;
+            public InputAction @Select => m_Wrapper.m_EntityBuilder_Select;
+            public InputAction @Point => m_Wrapper.m_EntityBuilder_Point;
+            public InputAction @CameraZoom => m_Wrapper.m_EntityBuilder_CameraZoom;
+            public InputActionMap Get() { return m_Wrapper.m_EntityBuilder; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(ComponentBuilderActions set) { return set.Get(); }
-            public void SetCallbacks(IComponentBuilderActions instance)
+            public static implicit operator InputActionMap(EntityBuilderActions set) { return set.Get(); }
+            public void SetCallbacks(IEntityBuilderActions instance)
             {
-                if (m_Wrapper.m_ComponentBuilderActionsCallbackInterface != null)
+                if (m_Wrapper.m_EntityBuilderActionsCallbackInterface != null)
                 {
-                    @CameraLook.started -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnCameraLook;
-                    @CameraLook.performed -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnCameraLook;
-                    @CameraLook.canceled -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnCameraLook;
-                    @CameraNavigate.started -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnCameraNavigate;
-                    @CameraNavigate.performed -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnCameraNavigate;
-                    @CameraNavigate.canceled -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnCameraNavigate;
-                    @Select.started -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnSelect;
-                    @Select.performed -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnSelect;
-                    @Select.canceled -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnSelect;
-                    @Point.started -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnPoint;
-                    @Point.performed -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnPoint;
-                    @Point.canceled -= m_Wrapper.m_ComponentBuilderActionsCallbackInterface.OnPoint;
+                    @CameraLook.started -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraLook;
+                    @CameraLook.performed -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraLook;
+                    @CameraLook.canceled -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraLook;
+                    @CameraNavigate.started -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraNavigate;
+                    @CameraNavigate.performed -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraNavigate;
+                    @CameraNavigate.canceled -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraNavigate;
+                    @Select.started -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnSelect;
+                    @Select.performed -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnSelect;
+                    @Select.canceled -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnSelect;
+                    @Point.started -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnPoint;
+                    @Point.performed -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnPoint;
+                    @Point.canceled -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnPoint;
+                    @CameraZoom.started -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraZoom;
+                    @CameraZoom.performed -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraZoom;
+                    @CameraZoom.canceled -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraZoom;
                 }
-                m_Wrapper.m_ComponentBuilderActionsCallbackInterface = instance;
+                m_Wrapper.m_EntityBuilderActionsCallbackInterface = instance;
                 if (instance != null)
                 {
                     @CameraLook.started += instance.OnCameraLook;
@@ -1095,10 +1121,13 @@ namespace Guinea.Core
                     @Point.started += instance.OnPoint;
                     @Point.performed += instance.OnPoint;
                     @Point.canceled += instance.OnPoint;
+                    @CameraZoom.started += instance.OnCameraZoom;
+                    @CameraZoom.performed += instance.OnCameraZoom;
+                    @CameraZoom.canceled += instance.OnCameraZoom;
                 }
             }
         }
-        public ComponentBuilderActions @ComponentBuilder => new ComponentBuilderActions(this);
+        public EntityBuilderActions @EntityBuilder => new EntityBuilderActions(this);
 
         // Operator
         private readonly InputActionMap m_Operator;
@@ -1195,12 +1224,13 @@ namespace Guinea.Core
             void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
             void OnEscape(InputAction.CallbackContext context);
         }
-        public interface IComponentBuilderActions
+        public interface IEntityBuilderActions
         {
             void OnCameraLook(InputAction.CallbackContext context);
             void OnCameraNavigate(InputAction.CallbackContext context);
             void OnSelect(InputAction.CallbackContext context);
             void OnPoint(InputAction.CallbackContext context);
+            void OnCameraZoom(InputAction.CallbackContext context);
         }
         public interface IOperatorActions
         {

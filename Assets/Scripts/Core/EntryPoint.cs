@@ -3,11 +3,11 @@ using Zenject;
 
 namespace Guinea.Core
 {
-    public sealed class EntryPoint: MonoBehaviour
+    public sealed class EntryPoint : MonoBehaviour
     {
         private LevelManager m_levelManager;
-        private static readonly SceneIndex[] m_sceneIndexes = {SceneIndex.TITLE}; 
-        
+        private static readonly SceneIndex[] m_sceneIndexes = { SceneIndex.TITLE_SCENE };
+
         [Inject]
         void Initialize(LevelManager levelManager)
         {

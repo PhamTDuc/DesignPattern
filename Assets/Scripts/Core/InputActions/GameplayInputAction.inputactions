@@ -538,7 +538,7 @@
             ]
         },
         {
-            "name": "ComponentBuilder",
+            "name": "EntityBuilder",
             "id": "4b3bcec9-86f7-4e23-ac56-e3a0b7235669",
             "actions": [
                 {
@@ -570,12 +570,21 @@
                 },
                 {
                     "name": "Point",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "b33c3a6f-f495-4726-806b-b0f27bf6c86e",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CameraZoom",
+                    "type": "PassThrough",
+                    "id": "5010e26a-c82e-4dee-9590-02f986e15b32",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -664,6 +673,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2af2c566-2040-4f1a-99c8-fee3ce2f29a4",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CameraZoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

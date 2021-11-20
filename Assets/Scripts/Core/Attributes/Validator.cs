@@ -22,7 +22,7 @@ namespace Guinea.Core
 #nullable disable
             if (attribute != null)
             {
-                Debug.Log($"ErrorMessage: {String.Format(attribute.ErrorMessage, info.Name)}");
+                Commons.Logger.Log($"ErrorMessage: {String.Format(attribute.ErrorMessage, info.Name)}");
             }
             return true;
         }

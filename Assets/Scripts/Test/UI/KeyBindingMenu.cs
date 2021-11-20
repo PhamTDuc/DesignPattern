@@ -27,14 +27,14 @@ namespace Guinea.Test.UI
 
         public void OnSaveToJson()
         {
-            Debug.Log("Save KeyBinding to used later");
+            Commons.Logger.Log("Save KeyBinding to used later");
             string json = InputManager.SaveBindingOverrideToString();
             PlayerPrefs.SetString(s_bindingsKeyName, json);
         }
 
         public void OnLoadFromJson()
         {
-            Debug.Log("Load from Json to used ");
+            Commons.Logger.Log("Load from Json to used ");
             string json = PlayerPrefs.GetString(s_bindingsKeyName);
             if (!string.IsNullOrEmpty(json))
             {

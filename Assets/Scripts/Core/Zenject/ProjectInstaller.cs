@@ -5,24 +5,23 @@ namespace Guinea.Core
 {
     public class ProjectInstaller : MonoInstaller
     {
-        [SerializeField] AudioManager m_audioManager;
-        [SerializeField] SettingManager m_settingManager;
-        [SerializeField] LevelManager m_levelManager;
-
+        [SerializeField] SettingManager m_settingManagerPrefab;
+        [SerializeField] AudioManager m_audioManagerPrefab;
+        [SerializeField] LevelManager m_levelManagerPrefab;
+        [SerializeField] Inventory.InventoryLoader m_inventoryLoaderPrefab;
         public override void InstallBindings()
         {
-            Container.Bind<AudioManager>().FromComponentInNewPrefab(m_audioManager).AsSingle();
-            Container.Bind<SettingManager>().FromComponentInNewPrefab(m_settingManager).AsSingle();
-            Container.Bind<LevelManager>().FromComponentInNewPrefab(m_levelManager).AsSingle();
-
-            Initialize();
+            Container.Bind<SettingManager>().FromComponentInNewPrefab(m_settingManagerPrefab).AsSingle().NonLazy();
+            Container.Bind<AudioManager>().FromComponentInNewPrefab(m_audioManagerPrefab).AsSingle().NonLazy();
+            Container.Bind<LevelManager>().FromComponentInNewPrefab(m_levelManagerPrefab).AsSingle().NonLazy();
+            Container.Bind<Inventory.InventoryLoader>().FromComponentInNewPrefab(m_inventoryLoaderPrefab).AsSingle().NonLazy();
+            Commons.Logger.Log("ProjectInstaller::InstallBindings()");
+            Init();
         }
 
-        // * This will called to initialize static class when no constructor specified
-        private static void Initialize()
+        private static void Init()
         {
-            // * InputManager only enables UI mapping when game starts, other mappings will be enabled manually when in use
-            InputManager.Initialize();
+            InputManager.Init();
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Guinea.Test
                 if (component != null)
                 {
                     Vector2Int indices = component.GetIndicesOnGrid(hit.point);
-                    Debug.Log($"Indices: {indices}");
+                    Commons.Logger.Log($"Indices: {indices}");
                     Vector3 pos = component.GetWorldPosition(hit.point, m_isCentered);
                     // Quaternion rot = Quaternion.FromToRotation(Vector3.up, hit.normal);
                     // Instantiate(m_prefab, pos, Quaternion.identity, m_reference);

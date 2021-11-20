@@ -2,8 +2,7 @@ namespace Guinea.Core.Components
 {
     public interface ICommand
     {
-        // void Execute();
+        void Execute();
         void Undo();
-        // void Redo();
     }
 }

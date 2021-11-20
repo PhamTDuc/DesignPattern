@@ -13,14 +13,16 @@ namespace Guinea.Core.UI
 
         [Tooltip("Parent for all menus prefab instantiated")]
         [SerializeField] Transform m_container;
-        [SerializeField] bool m_isToggle;
         Stack<MenuBase> m_menuStack = new Stack<MenuBase>();
         MenuBase.Factory m_menuFactory;
+
+        public bool IsVisible => m_container.gameObject.activeSelf;
 
         [Inject]
         public void Initialize(MenuBase.Factory menuFactory)
         {
             m_menuFactory = menuFactory;
+            Commons.Logger.Log("MenuManager::Initialize()");
         }
 
         #region Unity Callbacks
@@ -28,10 +30,8 @@ namespace Guinea.Core.UI
         {
             foreach (MenuBase menu in m_menus)
             {
-                if (menu == null)
-                {
-                    Debug.LogWarning("Some menus is missing from MenuManager");
-                }
+                Commons.Logger.Assert(menu != null, "Some menus is missing from MenuManager");
+
             }
         }
 
@@ -44,17 +44,12 @@ namespace Guinea.Core.UI
             }
 
             OpenMenu(m_menus[0].Type);
-            if (m_isToggle)
-            {
-                m_container.gameObject.SetActive(false); // * Not show ToggleMenu at first
-            }
         }
 
         void OnEnable()
         {
             // * On Android the back button is sent as ESC
             InputManager.AddBackKeyEvent(OnBackKeyEvent);
-            // InputManager.Map.UI.BackKey.performed += OnBackKeyEvent;
         }
 
         void OnDisable()
@@ -145,25 +140,10 @@ namespace Guinea.Core.UI
             }
         }
 
-        public void OnBackKeyEvent(InputAction.CallbackContext context)
-        {
-            if (m_menuStack.Count > 1)
-            {
-                m_menuStack.Peek().OnBackKeyEvent();
-            }
-            else
-            {
-                if (m_isToggle)
-                {
-                    m_container.gameObject.SetActive(!m_container.gameObject.activeSelf);
-                    InputManager.SetEnableExceptUI(!m_container.gameObject.activeSelf);
-                }
-                else
-                {
-                    m_menuStack.Peek().OnBackKeyEvent();
-                }
-            }
-        }
+        public void OnBackKeyEvent(InputAction.CallbackContext context) => m_menuStack.Peek().OnBackKeyEvent();
+
+        public void CloseCurrentMenus() => m_container.gameObject.SetActive(false);
+        public void OpenCurrentMenus() => m_container.gameObject.SetActive(true);
 
         void DisableUnderneath()
         {

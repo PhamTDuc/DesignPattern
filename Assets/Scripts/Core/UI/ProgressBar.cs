@@ -10,10 +10,12 @@ namespace Guinea.Core.UI
         [SerializeField] Slider m_slider;
         [SerializeField] Image m_fillImage;
 
-        public void ChangeValue(int value)
+        public void ChangeValue(float value)
         {
             m_slider.value = (float)(value - m_minimumValue) / (m_maximumValue - m_minimumValue);
         }
+
+        public void Reset() => m_slider.value = 0;
 
         public void ChangeColor(Color color)
         {

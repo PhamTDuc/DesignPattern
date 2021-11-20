@@ -13,7 +13,7 @@ namespace Guinea.Core
         private static HashSet<InputActionMap> s_enabledInputActionMap = new HashSet<InputActionMap>();
         private static List<Action<InputAction.CallbackContext>> m_backKeyCallbackList = new List<Action<InputAction.CallbackContext>>();
 
-        public static void Initialize()
+        public static void Init()
         {
             // s_inputAction.Enable();
             s_inputAction.Disable();
@@ -26,7 +26,7 @@ namespace Guinea.Core
             if (!m_backKeyCallbackList.Contains(action))
             {
                 m_backKeyCallbackList.Add(action);
-                Debug.Log($"AddBackKeyEvent(): {m_backKeyCallbackList.Count} Action: {action}");
+                Commons.Logger.Log($"AddBackKeyEvent(): {m_backKeyCallbackList.Count} Action: {action}");
             }
         }
 
@@ -34,11 +34,11 @@ namespace Guinea.Core
         {
             if (m_backKeyCallbackList.Remove(action))
             {
-                Debug.Log($"RemoveBackKeyEvent() SUCCESS: {m_backKeyCallbackList.Count} Action: {m_backKeyCallbackList.LastOrDefault()}");
+                Commons.Logger.Log($"RemoveBackKeyEvent() SUCCESS: {m_backKeyCallbackList.Count} Action: {m_backKeyCallbackList.LastOrDefault()}");
             }
             else
             {
-                Debug.Log($"RemoveBackKeyEvent() FAILED. {action} not exists");
+                Commons.Logger.Log($"RemoveBackKeyEvent() FAILED. {action} not exists");
             }
         }
 

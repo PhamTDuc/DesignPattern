@@ -59,6 +59,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4925c7753ddc7841bd4b7425921e4db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_type: 4
+  m_destroyWhenClose: 0
+  m_disableUnderneath: 0
+  m_disableSameLayer: 1
+  m_layer: 1
   m_btnPrefab: {fileID: 6564184256031422, guid: eaa7c57543729ba4082307cc600bb083, type: 3}
   m_btnContainer: {fileID: 5874792123147037988}
   m_tabContainer: {fileID: 5874792123319892179}
@@ -151,15 +156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf41c96e516d12e41bd0e2951593cf27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_onTabButtonClick:
-    m_PersistentCalls:
-      m_Calls: []
-  m_onTabButtonEnter:
-    m_PersistentCalls:
-      m_Calls: []
-  m_onTabButtonExit:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &5874792122199185646
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,15 +381,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf41c96e516d12e41bd0e2951593cf27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_onTabButtonClick:
-    m_PersistentCalls:
-      m_Calls: []
-  m_onTabButtonEnter:
-    m_PersistentCalls:
-      m_Calls: []
-  m_onTabButtonExit:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &5874792123006810477
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,12 +862,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf41c96e516d12e41bd0e2951593cf27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_onTabButtonClick:
-    m_PersistentCalls:
-      m_Calls: []
-  m_onTabButtonEnter:
-    m_PersistentCalls:
-      m_Calls: []
-  m_onTabButtonExit:
-    m_PersistentCalls:
-      m_Calls: []

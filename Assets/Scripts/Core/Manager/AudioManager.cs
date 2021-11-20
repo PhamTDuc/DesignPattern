@@ -14,7 +14,19 @@ namespace Guinea.Core
             }
             else
             {
-                Debug.LogWarning($"AudioManager::{sourceType} SourceType not found");
+                Commons.Logger.LogWarning($"AudioManager::{sourceType} SourceType not found");
+            }
+        }
+
+        public void AddAudioSource(SourceType sourceType, Sound sound)
+        {
+            if (!m_audioSourceDictionary.ContainsKey(sourceType))
+            {
+                m_audioSourceDictionary.Add(sourceType, sound);
+            }
+            else
+            {
+                Commons.Logger.LogWarning($"AudioManager::Can't not add {sourceType} SourceType. It already exists");
             }
         }
 

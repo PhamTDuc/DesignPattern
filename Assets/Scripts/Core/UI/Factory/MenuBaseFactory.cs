@@ -7,7 +7,6 @@ namespace Guinea.Core.UI
     {
         DiContainer m_container;
 
-        [Inject]
         public MenuBaseFactory(DiContainer container)
         {
             m_container = container;

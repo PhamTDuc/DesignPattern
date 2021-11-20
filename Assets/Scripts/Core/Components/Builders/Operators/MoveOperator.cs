@@ -7,8 +7,6 @@ namespace Guinea.Core.Components
     public class MoveOperator : MonoBehaviour, IOperator
     {
         [SerializeField] LayerMask m_placementLayer;
-        [SerializeField] float m_lineWidth;
-
         Vector3 m_offset;
         float m_z;
         Camera m_camera;
@@ -27,9 +25,13 @@ namespace Guinea.Core.Components
             m_sharedInteraction = sharedInteraction;
         }
 
-        public IOperator.Result Invoke(Context context)
+        void Awake()
         {
             m_camera = Camera.main;
+        }
+
+        public IOperator.Result Invoke(Context context)
+        {
             m_z = m_camera.WorldToScreenPoint(context.@object.position).z;
             m_offset = context.@object.position - m_camera.ScreenToWorldPoint(MousePointOnScreen());
 
@@ -45,6 +47,11 @@ namespace Guinea.Core.Components
 
         public IOperator.Result Execute(Context context)
         {
+            if (!InputManager.Map.EntityBuilder.Point.triggered)
+            {
+                return IOperator.Result.RUNNING_MODAL;
+            }
+
             Ray ray = m_camera.ScreenPointToRay(MousePointOnScreen());
 
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, m_placementLayer))
@@ -129,7 +136,7 @@ namespace Guinea.Core.Components
 
         private Vector3 MousePointOnScreen()
         {
-            Vector3 mousePos = InputManager.Map.ComponentBuilder.Point.ReadValue<Vector2>();
+            Vector3 mousePos = InputManager.Map.EntityBuilder.Point.ReadValue<Vector2>();
             mousePos.z = m_z;
             return mousePos;
         }

@@ -11,8 +11,8 @@ namespace Guinea.Core.Components
         [SerializeField] Transform m_visualWheels;
         [SerializeField] float steerAngle;
         [SerializeField] float motorTorque;
-        [SerializeField] Transform m_target; // Test IWeapon.AimTo() for multiple weapons
-        [SerializeField] bool m_shoot; // Test IWeapon.Shoot() for multiple weapons
+        [SerializeField] Transform m_target; // TEST: IWeapon.AimTo() for multiple weapons
+        [SerializeField] bool m_shoot; // TEST: IWeapon.Shoot() for multiple weapons
         List<Wheel> m_wheels;
         List<IWeapon> m_weapons;
 

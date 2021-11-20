@@ -23,6 +23,7 @@ namespace Guinea.Core.UI
         public void Initialize(MenuManager menuManager)
         {
             m_menuManager = menuManager;
+            Commons.Logger.Log("MenuBase.Initialize()");
         }
 
         public abstract void OnBackKeyEvent();

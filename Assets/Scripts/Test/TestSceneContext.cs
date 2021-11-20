@@ -11,6 +11,9 @@ namespace Guinea.Test
     {
         [SerializeField] ItemUI m_itemUI;
 
+        [TextArea(10, 20)]
+        [SerializeField] string m_inventoryJson;
+
         // * DiContainer always inject yourself
         public override void InstallBindings()
         {
@@ -21,15 +24,18 @@ namespace Guinea.Test
             Container.BindFactory<TabButton, UnityEngine.Transform, string, TabButton, TabButton.Factory>().FromFactory<TabButtonFactory>();
 
             Container.Bind<ItemUIDrag>().FromComponentInHierarchy().AsSingle();
-            Container.BindFactory<ItemType, UnityEngine.Transform, Sprite, ItemUI, ItemUI.Factory>().FromIFactory(x => x.To<ItemUIFactory>().AsSingle().WithArguments<ItemUI>(m_itemUI));
+            Container.BindFactory<ItemType, UnityEngine.Transform, Sprite, int, ItemUI, ItemUI.Factory>().FromIFactory(x => x.To<ItemUIFactory>().AsSingle().WithArguments<ItemUI>(m_itemUI));
 
             Container.Bind<SharedInteraction>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<OperatorManager>().FromComponentInHierarchy().AsSingle();
             Container.Bind<ManipulationManager>().FromComponentInHierarchy().AsSingle();
-            Container.Bind<InventoryLoader>().FromComponentInHierarchy().AsSingle();
+            // Container.Bind<InventoryLoader>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<InventoryUI>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<Inventory>().AsSingle().WithArguments(m_inventoryJson);
 
 
             #region Initialize
-            InputManager.SetActionMap(InputManager.Map.ComponentBuilder, true);
+            InputManager.SetActionMap(InputManager.Map.EntityBuilder, true);
             InputManager.SetActionMap(InputManager.Map.Player, true);
             // InputManager.SetCursor(false);
             #endregion

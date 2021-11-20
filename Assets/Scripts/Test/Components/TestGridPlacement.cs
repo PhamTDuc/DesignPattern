@@ -16,7 +16,7 @@ namespace Guinea.Test
 
         void Start()
         {
-            Debug.Log(m_grid.GetIndicesOnGrid(new Vector3(3f, 0, 3f)));
+            Commons.Logger.Log(m_grid.GetIndicesOnGrid(new Vector3(3f, 0, 3f)));
         }
 #endif
     }

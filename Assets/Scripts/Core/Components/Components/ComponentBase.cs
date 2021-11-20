@@ -28,7 +28,7 @@ namespace Guinea.Core.Components
             }
             m_attachedComponents.Add(component);
             // OnDetach += component.OnDetachCallback;
-            Debug.Log($"ComponentBase::AddComponent(): {component.gameObject.name} to {gameObject.name}");
+            Commons.Logger.Log($"ComponentBase::AddComponent(): {component.gameObject.name} to {gameObject.name}");
         }
 
         public void DetachAllComponents(out List<ComponentBase> childrenComponents)
@@ -52,7 +52,7 @@ namespace Guinea.Core.Components
 
         void OnDetachCallback()
         {
-            Debug.Log($"Detach component {gameObject.name}");
+            Commons.Logger.Log($"Detach component {gameObject.name}");
         }
 
         public IEnumerator GetEnumerator()

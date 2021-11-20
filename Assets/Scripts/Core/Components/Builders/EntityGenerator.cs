@@ -18,28 +18,34 @@ namespace Guinea.Core.Components
         Node m_node;
         SharedInteraction m_sharedInteraction;
         InventoryLoader m_inventoryLoader;
+        Inventory.Inventory m_inventory;
+        ManipulationManager m_manipulationManager;
 
         [Inject]
-        void Initialize(SharedInteraction sharedInteraction, InventoryLoader inventoryLoader)
+        void Initialize(SharedInteraction sharedInteraction, InventoryLoader inventoryLoader, Inventory.Inventory inventory, ManipulationManager manipulationManager)
         {
             m_sharedInteraction = sharedInteraction;
             m_inventoryLoader = inventoryLoader;
+            m_inventory = inventory;
+            m_manipulationManager = manipulationManager;
         }
 
         public void Generate()
         {
+            m_manipulationManager.ResetContext(); // ? Should we reset context of selected object
             ComponentBase root = m_sharedInteraction.Root?.GetComponent<ComponentBase>();
             if (root != null)
             {
                 m_entity.transform.position = root.transform.position;
+                m_entity.transform.rotation = root.transform.rotation;
                 root.transform.SetParent(m_entity.transform);
                 WalkInComponentBase(root);
                 m_entity.CleanUp();
-                Debug.Log("Generate Entity DONE!!");
+                Commons.Logger.Log("Generate Entity DONE!!");
             }
             else
             {
-                Debug.LogWarning("No Root Frame SPECIFIED!!");
+                Commons.Logger.LogWarning("No Root Frame SPECIFIED!!");
             }
         }
 
@@ -93,22 +99,25 @@ namespace Guinea.Core.Components
 
         private void WalkInNode(Node node, out ComponentBase component)
         {
+            component = null;
             if (Enum.TryParse(node.name, out ItemType itemType))
             {
-                component = Instantiate(m_inventoryLoader.Items[itemType].obj, node.position, node.rotation).GetComponent<ComponentBase>();
-                if (node.children != null)
+                if (m_inventory.Use(itemType))
                 {
-                    foreach (Node child in node.children)
+                    component = Instantiate(m_inventoryLoader.Items[itemType].obj, node.position, node.rotation).GetComponent<ComponentBase>();
+                    if (node.children != null)
                     {
-                        ComponentBase child_component;
-                        WalkInNode(child, out child_component);
-                        component.AddComponent(child_component);
+                        foreach (Node child in node.children)
+                        {
+                            ComponentBase child_component;
+                            WalkInNode(child, out child_component);
+                            component.AddComponent(child_component);
+                        }
                     }
                 }
             }
             else
             {
-                component = null;
                 Debug.LogError($"Fail to Parse {node.name} to enum type<{typeof(ItemType)}>");
             }
         }

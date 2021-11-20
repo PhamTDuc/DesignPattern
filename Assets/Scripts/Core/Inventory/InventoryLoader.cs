@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.EventSystems;
-using Zenject;
 
 namespace Guinea.Core.Inventory
 {
     // * Persistent Data Loader
-    public class InventoryLoader : MonoBehaviour
+    public class InventoryLoader : MonoBehaviour, IAsyncManager
     {
         [TextArea(4, 20)] [SerializeField] string m_json;
         Dictionary<ItemType, ItemAsset> m_itemsSpriteDict;
@@ -20,20 +18,26 @@ namespace Guinea.Core.Inventory
         Task m_completedTask;
 
         private static string debugName = "Inventory Loader";
+        // private static WaitForSeconds s_delay = new WaitForSeconds(1f);
 
         public string DebugName => debugName;
 
         public Exception OperationException { get; private set; }
         public float PercentComplete { get; private set; }
-        // public T Result { get; }
         public AsyncOperationStatus Status { get; private set; } = AsyncOperationStatus.None;
-        public Task Task { get; private set; } = null;
-        // public event Action<Dictionary<ItemType, ItemAsset>> OnCompleted;
+        public Task Task
+        {
+            get
+            {
+                if (m_completedTask == null) Init();
+                return m_completedTask;
+            }
+        }
         public Dictionary<ItemType, ItemAsset> Items => m_itemsSpriteDict;
 
         public void Init()
         {
-            if (Task != null) return;
+            if (m_completedTask != null) return;
             List<ItemInfo> itemsInfo = DataHandler.JsonHandler.Deserialize<List<ItemInfo>>(m_json);
             m_handles = new List<ItemAssetHandle>();
             m_itemsSpriteDict = new Dictionary<ItemType, ItemAsset>();
@@ -43,17 +47,15 @@ namespace Guinea.Core.Inventory
             {
                 AsyncOperationHandle<Sprite> spriteHandle = Addressables.LoadAssetAsync<Sprite>(itemInfo.spriteAddress);
                 AsyncOperationHandle<GameObject> objHandle = Addressables.LoadAssetAsync<GameObject>(itemInfo.objectAddress);
-                Debug.Log($"ItemInfo: {itemInfo.objectAddress}");
+                Commons.Logger.Log($"ItemInfo: {itemInfo.objectAddress}");
                 m_handles.Add(new ItemAssetHandle(spriteHandle, objHandle));
                 m_tasks.Add(spriteHandle.Task);
                 m_tasks.Add(objHandle.Task);
             }
-            Task = m_completedTask;
-
-            StartCoroutine(LoadFromJsonCoroutine(itemsInfo));
+            StartCoroutine(LoadFromListCoroutine(itemsInfo));
         }
 
-        private IEnumerator LoadFromJsonCoroutine(List<ItemInfo> itemsInfo)
+        private IEnumerator LoadFromListCoroutine(List<ItemInfo> itemsInfo)
         {
             ItemAssetHandle current_handle;
             while ((current_handle = m_handles.Find(handle => !handle.IsDone)) != default(ItemAssetHandle))
@@ -72,7 +74,7 @@ namespace Guinea.Core.Inventory
                     percentageComplete += handle.PercentComplete;
                 }
                 PercentComplete = percentageComplete / m_handles.Count;
-                Debug.Log($"Percentage: {PercentComplete}");
+                Commons.Logger.Log($"Percentage: {PercentComplete}");
                 yield return null;
             }
 

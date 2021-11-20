@@ -17,19 +17,19 @@ namespace Guinea.Core.UI
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            Debug.Log("OnBegin Drag");
+            Commons.Logger.Log("OnBegin Drag");
         }
 
         public void OnDrag(PointerEventData eventData)
         {
             m_rectTransform.anchoredPosition += eventData.delta / m_canvas.scaleFactor;
-            Debug.Log(" Dragging");
+            Commons.Logger.Log(" Dragging");
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
 
-            Debug.Log("OnEnd Drag");
+            Commons.Logger.Log("OnEnd Drag");
         }
     }
 }
