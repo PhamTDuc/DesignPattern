@@ -13,20 +13,20 @@ namespace Guinea.Core.Inventory
         Dictionary<ItemType, ItemUI> m_itemUIs;
 
         ItemUI.Factory m_factory;
-        ManipulationManager m_manipulationManager;
         InventoryLoader m_inventoryLoader;
         Inventory m_inventory;
+        Components.Context m_context;
 
         AddComponentCommand.Factory m_addComponentCommandFactory;
 
         [Inject]
-        void Initialize(ItemUI.Factory factory, AddComponentCommand.Factory addComponentCommandFactory, ManipulationManager manipulationManager, InventoryLoader inventoryLoader, Inventory inventory)
+        void Initialize(ItemUI.Factory factory, AddComponentCommand.Factory addComponentCommandFactory, InventoryLoader inventoryLoader, Inventory inventory, Components.Context context)
         {
             m_factory = factory;
             m_addComponentCommandFactory = addComponentCommandFactory;
-            m_manipulationManager = manipulationManager;
             m_inventoryLoader = inventoryLoader;
             m_inventory = inventory;
+            m_context = context;
             Commons.Logger.Log("InventoryUI::Initialize()");
         }
 
@@ -42,8 +42,7 @@ namespace Guinea.Core.Inventory
             m_inventory.OnUpdateItem -= UpdateUI;
         }
 
-
-        // // * Will be call in Inventory::GenerateInventoryUI()
+        // * Will be call in Inventory::GenerateInventoryUI()
         private async void GenerateInventoryUI(Dictionary<ItemType, int> inventoryItems)
         {
             await m_inventoryLoader.Task;
@@ -78,34 +77,24 @@ namespace Guinea.Core.Inventory
             RectTransform panel = transform as RectTransform;
             if (!RectTransformUtility.RectangleContainsScreenPoint(panel, Input.mousePosition))
             {
-                Transform trans;
-                Vector3 pos;
-                Quaternion rot;
+                Vector3 position;
                 if (eventData.pointerDrag != null)
                 {
                     ItemUI item = eventData.pointerDrag.GetComponent<ItemUI>();
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    Transform instance = m_inventoryLoader.Items[item.Type].obj.transform;
-                    rot = instance.rotation;
 
                     if (Physics.Raycast(ray, out RaycastHit hit, 100f))
                     {
-                        pos = hit.point;
-                        trans = Instantiate(instance, pos, instance.rotation);
+                        position = hit.point;
                     }
                     else
                     {
                         Vector3 mousePos = Input.mousePosition;
                         mousePos.z = 8f;
-                        pos = Camera.main.ScreenToWorldPoint(mousePos);
-                        trans = Instantiate(instance, pos, instance.rotation);
+                        position = Camera.main.ScreenToWorldPoint(mousePos);
                     }
-                    m_inventory.Use(item.Type);
-                    AddComponentCommand command = m_addComponentCommandFactory.Create(item.Type, trans);
 
-                    m_manipulationManager.Select(trans);
-                    m_manipulationManager.SwitchToMoveOperator();
-                    m_manipulationManager.InvokeCurrentOperator();
+                    OperatorManager.Execute<AddOperator>(IOperator.Exec.INVOKE, item.Type, position);
                     Commons.Logger.Log("Drop Item  !!!");
                 }
             }

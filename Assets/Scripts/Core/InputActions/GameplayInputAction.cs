@@ -609,6 +609,15 @@ namespace Guinea.Core
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Unselect"",
+                    ""type"": ""Button"",
+                    ""id"": ""b45e47b8-1c8b-4d4a-8283-fd8a36a85cec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -708,6 +717,28 @@ namespace Guinea.Core
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""CameraZoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4b8ee42-6d90-4ead-9d96-7e87036af593"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Unselect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e85bedf6-8db1-41bf-9387-204ab85c7cd1"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Unselect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -887,6 +918,7 @@ namespace Guinea.Core
             m_EntityBuilder_Select = m_EntityBuilder.FindAction("Select", throwIfNotFound: true);
             m_EntityBuilder_Point = m_EntityBuilder.FindAction("Point", throwIfNotFound: true);
             m_EntityBuilder_CameraZoom = m_EntityBuilder.FindAction("CameraZoom", throwIfNotFound: true);
+            m_EntityBuilder_Unselect = m_EntityBuilder.FindAction("Unselect", throwIfNotFound: true);
             // Operator
             m_Operator = asset.FindActionMap("Operator", throwIfNotFound: true);
             m_Operator_Cancel = m_Operator.FindAction("Cancel", throwIfNotFound: true);
@@ -1072,6 +1104,7 @@ namespace Guinea.Core
         private readonly InputAction m_EntityBuilder_Select;
         private readonly InputAction m_EntityBuilder_Point;
         private readonly InputAction m_EntityBuilder_CameraZoom;
+        private readonly InputAction m_EntityBuilder_Unselect;
         public struct EntityBuilderActions
         {
             private @GameplayInputAction m_Wrapper;
@@ -1081,6 +1114,7 @@ namespace Guinea.Core
             public InputAction @Select => m_Wrapper.m_EntityBuilder_Select;
             public InputAction @Point => m_Wrapper.m_EntityBuilder_Point;
             public InputAction @CameraZoom => m_Wrapper.m_EntityBuilder_CameraZoom;
+            public InputAction @Unselect => m_Wrapper.m_EntityBuilder_Unselect;
             public InputActionMap Get() { return m_Wrapper.m_EntityBuilder; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1105,6 +1139,9 @@ namespace Guinea.Core
                     @CameraZoom.started -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraZoom;
                     @CameraZoom.performed -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraZoom;
                     @CameraZoom.canceled -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnCameraZoom;
+                    @Unselect.started -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnUnselect;
+                    @Unselect.performed -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnUnselect;
+                    @Unselect.canceled -= m_Wrapper.m_EntityBuilderActionsCallbackInterface.OnUnselect;
                 }
                 m_Wrapper.m_EntityBuilderActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1124,6 +1161,9 @@ namespace Guinea.Core
                     @CameraZoom.started += instance.OnCameraZoom;
                     @CameraZoom.performed += instance.OnCameraZoom;
                     @CameraZoom.canceled += instance.OnCameraZoom;
+                    @Unselect.started += instance.OnUnselect;
+                    @Unselect.performed += instance.OnUnselect;
+                    @Unselect.canceled += instance.OnUnselect;
                 }
             }
         }
@@ -1231,6 +1271,7 @@ namespace Guinea.Core
             void OnSelect(InputAction.CallbackContext context);
             void OnPoint(InputAction.CallbackContext context);
             void OnCameraZoom(InputAction.CallbackContext context);
+            void OnUnselect(InputAction.CallbackContext context);
         }
         public interface IOperatorActions
         {

@@ -19,20 +19,17 @@ namespace Guinea.Core.Components
         SharedInteraction m_sharedInteraction;
         InventoryLoader m_inventoryLoader;
         Inventory.Inventory m_inventory;
-        ManipulationManager m_manipulationManager;
 
         [Inject]
-        void Initialize(SharedInteraction sharedInteraction, InventoryLoader inventoryLoader, Inventory.Inventory inventory, ManipulationManager manipulationManager)
+        void Initialize(SharedInteraction sharedInteraction, InventoryLoader inventoryLoader, Inventory.Inventory inventory)
         {
             m_sharedInteraction = sharedInteraction;
             m_inventoryLoader = inventoryLoader;
             m_inventory = inventory;
-            m_manipulationManager = manipulationManager;
         }
 
         public void Generate()
         {
-            m_manipulationManager.ResetContext(); // ? Should we reset context of selected object
             ComponentBase root = m_sharedInteraction.Root?.GetComponent<ComponentBase>();
             if (root != null)
             {

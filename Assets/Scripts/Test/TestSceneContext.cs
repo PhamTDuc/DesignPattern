@@ -28,8 +28,6 @@ namespace Guinea.Test
 
             Container.Bind<SharedInteraction>().FromComponentInHierarchy().AsSingle();
             Container.Bind<OperatorManager>().FromComponentInHierarchy().AsSingle();
-            Container.Bind<ManipulationManager>().FromComponentInHierarchy().AsSingle();
-            // Container.Bind<InventoryLoader>().FromComponentInHierarchy().AsSingle();
             Container.Bind<InventoryUI>().FromComponentInHierarchy().AsSingle();
             Container.Bind<Inventory>().AsSingle().WithArguments(m_inventoryJson);
 

@@ -24,19 +24,21 @@ namespace Guinea.Core
 
             Container.Bind<Components.Context>().AsSingle().NonLazy();
             Container.Bind<SharedInteraction>().FromComponentInHierarchy().AsSingle();
-            Container.Bind<OperatorManager>().FromComponentInHierarchy().AsSingle();
-            Container.Bind<ManipulationManager>().FromComponentInHierarchy().AsSingle();
 
             // Container.Bind<Inventory.Inventory>().AsSingle().WithArguments(m_inventoryJson);
             Container.Bind<Inventory.Inventory>().FromComponentInHierarchy().AsSingle();
             Container.BindFactory<ItemType, Transform, AddComponentCommand, AddComponentCommand.Factory>();
 
-            Init();
+            Initialize();
             Commons.Logger.Log("EntityBuilder::InstallBindings()");
         }
 
-        private void Init()
+        private void Initialize()
         {
+            OperatorManager.Initialize(Container.Resolve<Components.Context>());
+            AddOperator.Initialize(Container.Resolve<Inventory.Inventory>(), Container.Resolve<Inventory.InventoryLoader>());
+            MoveOperator.Initialize(Container.Resolve<SharedInteraction>());
+
             InputManager.SetActionMap(InputManager.Map.EntityBuilder, true);
         }
     }
