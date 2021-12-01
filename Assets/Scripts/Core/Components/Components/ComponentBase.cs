@@ -59,6 +59,7 @@ namespace Guinea.Core.Components
 
         public IEnumerator GetEnumerator()
         {
+            m_attachedComponents?.RemoveAll(component => component== null);
             return m_attachedComponents?.GetEnumerator();
         }
 
