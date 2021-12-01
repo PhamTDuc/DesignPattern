@@ -114,9 +114,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_type: 1
-  m_itemType: 3
+  m_itemType: 200
   m_attachType: 1
   m_weight: 0
+  m_maxHealth: 40
+  m_currentHealth: 0
 --- !u!114 &-1195752814369634761
 MonoBehaviour:
   m_ObjectHideFlags: 0

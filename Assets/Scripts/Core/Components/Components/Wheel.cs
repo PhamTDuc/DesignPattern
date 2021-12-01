@@ -6,7 +6,7 @@ namespace Guinea.Core.Components
     {
         [SerializeField] bool m_canSteer;
         [SerializeField] bool m_hasMotor;
-        [SerializeField]float m_radius;
+        [SerializeField] float m_radius;
         WheelCollider m_wheelCollider;
         Transform m_pivot;
 
@@ -15,7 +15,6 @@ namespace Guinea.Core.Components
         {
             m_wheelCollider = wheelCollider;
             m_pivot = pivot;
-
             m_wheelCollider.radius = m_radius;
         }
 
@@ -43,7 +42,7 @@ namespace Guinea.Core.Components
             m_wheelCollider.GetWorldPose(out pos, out rot);
             // transform.position = pos;
             // transform.localRotation = m_initialOrientation * Quaternion.AngleAxis(m_wheelCollider.steerAngle, m_wheelCollider.transform.right) * Quaternion.AngleAxis(m_rpm, m_wheelCollider.transform.up);
-            m_pivot.position =pos;
+            m_pivot.position = pos;
             m_pivot.rotation = rot;
         }
     }

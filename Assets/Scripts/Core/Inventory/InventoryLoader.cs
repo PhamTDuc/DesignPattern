@@ -18,7 +18,7 @@ namespace Guinea.Core.Inventory
         Task m_completedTask;
 
         private static string debugName = "Inventory Loader";
-        // private static WaitForSeconds s_delay = new WaitForSeconds(1f);
+        private static WaitForSeconds s_delay = new WaitForSeconds(1f);
 
         public string DebugName => debugName;
 
@@ -29,13 +29,13 @@ namespace Guinea.Core.Inventory
         {
             get
             {
-                if (m_completedTask == null) Init();
+                if (m_completedTask == null) Initialize();
                 return m_completedTask;
             }
         }
         public Dictionary<ItemType, ItemAsset> Items => m_itemsSpriteDict;
 
-        public void Init()
+        public void Initialize()
         {
             if (m_completedTask != null) return;
             List<ItemInfo> itemsInfo = DataHandler.JsonHandler.Deserialize<List<ItemInfo>>(m_json);
@@ -74,8 +74,7 @@ namespace Guinea.Core.Inventory
                     percentageComplete += handle.PercentComplete;
                 }
                 PercentComplete = percentageComplete / m_handles.Count;
-                Commons.Logger.Log($"Percentage: {PercentComplete}");
-                yield return null;
+                yield return s_delay;
             }
 
             for (int i = 0; i < itemsInfo.Count; i++)
@@ -94,7 +93,6 @@ namespace Guinea.Core.Inventory
             PercentComplete = 100f;
             Status = AsyncOperationStatus.Succeeded;
             m_completedTask.Start();
-            // OnCompleted(m_itemsSpriteDict);
         }
         ~InventoryLoader()
         {

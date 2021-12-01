@@ -1,14 +1,16 @@
 using UnityEngine;
 using Guinea.Core.Components;
+using Zenject;
 
 namespace Guinea.Test.UI
 {
     public class TestButtons : MonoBehaviour
     {
-#if UNITY_EDITOR
-        public void TestOpProp()
+        Core.LevelManager m_levelManager;
+        [Inject]
+        void Initialize(Core.LevelManager levelManager)
         {
-            // OperatorManager.Execute<AddOperator>(IOperator.Exec.EXECUTE);
+            m_levelManager = levelManager;
         }
 
         public void Undo()
@@ -20,6 +22,10 @@ namespace Guinea.Test.UI
         {
             OperatorManager.Redo();
         }
-#endif
+
+        public void GoToTestScene()
+        {
+            m_levelManager.LoadLevel(new[] { Core.SceneIndex.LEVEL_01 }, true, true);
+        }
     }
 }

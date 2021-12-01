@@ -9,8 +9,7 @@ namespace Guinea.Core
     public class EntityBuilder : MonoInstaller
     {
         [SerializeField] ItemUI m_itemUI;
-        [TextArea(10, 20)]
-        [SerializeField] string m_inventoryJson;
+        [SerializeField] Collider m_groundCollider;
         public override void InstallBindings()
         {
             Container.Bind<TabMenu>().FromComponentInParents();
@@ -24,10 +23,7 @@ namespace Guinea.Core
 
             Container.Bind<Components.Context>().AsSingle().NonLazy();
             Container.Bind<SharedInteraction>().FromComponentInHierarchy().AsSingle();
-
-            // Container.Bind<Inventory.Inventory>().AsSingle().WithArguments(m_inventoryJson);
-            Container.Bind<Inventory.Inventory>().FromComponentInHierarchy().AsSingle();
-            Container.BindFactory<ItemType, Transform, AddComponentCommand, AddComponentCommand.Factory>();
+            Container.Bind<Collider>().FromInstance(m_groundCollider).AsSingle();
 
             Initialize();
             Commons.Logger.Log("EntityBuilder::InstallBindings()");
@@ -35,11 +31,8 @@ namespace Guinea.Core
 
         private void Initialize()
         {
-            OperatorManager.Initialize(Container.Resolve<Components.Context>());
-            AddOperator.Initialize(Container.Resolve<Inventory.Inventory>(), Container.Resolve<Inventory.InventoryLoader>());
-            MoveOperator.Initialize(Container.Resolve<SharedInteraction>());
-
-            InputManager.SetActionMap(InputManager.Map.EntityBuilder, true);
+            // InputManager.SetActionMap(InputManager.Map.EntityBuilder, true);
+            InputManager.Map.EntityBuilder.Enable();
         }
     }
 }

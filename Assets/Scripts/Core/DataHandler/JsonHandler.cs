@@ -1,6 +1,5 @@
 using System;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace Guinea.Core.DataHandler
 {
@@ -29,7 +28,7 @@ namespace Guinea.Core.DataHandler
         }
 #endif
 
-        public static T Deserialize<T>(string json)
+        public static T Deserialize<T>(string json, JsonSerializerSettings setting = null)
         {
             if (string.IsNullOrEmpty(json))
             {
@@ -38,7 +37,7 @@ namespace Guinea.Core.DataHandler
             T data;
             try
             {
-                data = JsonConvert.DeserializeObject<T>(json);
+                data = JsonConvert.DeserializeObject<T>(json, setting);
                 Commons.Logger.LogIf(debug, $"Deserialize: {data}");
                 return data;
             }

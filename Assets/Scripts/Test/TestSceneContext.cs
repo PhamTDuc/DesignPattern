@@ -28,13 +28,16 @@ namespace Guinea.Test
 
             Container.Bind<SharedInteraction>().FromComponentInHierarchy().AsSingle();
             Container.Bind<OperatorManager>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<Core.Components.Context>().AsSingle().NonLazy();
             Container.Bind<InventoryUI>().FromComponentInHierarchy().AsSingle();
-            Container.Bind<Inventory>().AsSingle().WithArguments(m_inventoryJson);
+            // Container.Bind<Inventory>().AsSingle().WithArguments(m_inventoryJson);
 
 
             #region Initialize
-            InputManager.SetActionMap(InputManager.Map.EntityBuilder, true);
-            InputManager.SetActionMap(InputManager.Map.Player, true);
+            // InputManager.SetActionMap(InputManager.Map.EntityBuilder, true);
+            // InputManager.SetActionMap(InputManager.Map.Player, true);
+            InputManager.Map.EntityBuilder.Enable();
+            InputManager.Map.Player.Enable();
             // InputManager.SetCursor(false);
             #endregion
         }

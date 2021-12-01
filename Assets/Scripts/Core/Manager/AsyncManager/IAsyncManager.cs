@@ -12,6 +12,6 @@ namespace Guinea.Core
         AsyncOperationStatus Status { get; }
         Task Task { get; }
 
-        void Init();
+        void Initialize();
     }
 }

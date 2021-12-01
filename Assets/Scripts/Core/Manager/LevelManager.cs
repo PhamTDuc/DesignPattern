@@ -21,7 +21,7 @@ namespace Guinea.Core
         List<SceneIndex> m_loadedScenes = new List<SceneIndex>();
         List<AsyncOperation> m_asyncOperations = new List<AsyncOperation>();
         List<IAsyncManager> m_asyncManagers = new List<IAsyncManager>();
-        private static WaitForSeconds s_delay = new WaitForSeconds(4f);
+        private static WaitForSeconds s_delay = new WaitForSeconds(1f);
         float m_loadAsyncManagerProgress = 0f;
         float m_loadLevelProgress = 0f;
 
@@ -50,8 +50,8 @@ namespace Guinea.Core
                 foreach (SceneIndex sceneIndex in m_loadedScenes)
                 {
                     m_asyncOperations.Add(SceneManager.UnloadSceneAsync((int)sceneIndex));
-                    m_loadedScenes.Remove(sceneIndex);
                 }
+                m_loadedScenes.Clear();
 
             }
 
@@ -63,34 +63,32 @@ namespace Guinea.Core
 
             if (loadingScreen)
             {
-                StartCoroutine(GetSceneLoadProgress());
+                StartCoroutine(GetSceneLoadProgressCoroutine());
             }
         }
 
-        private IEnumerator GetSceneLoadProgress()
+        private IEnumerator GetSceneLoadProgressCoroutine()
         {
             float totalProgress;
             m_loadingScreen.SetActive(true);
-            foreach (AsyncOperation asyncOperation in m_asyncOperations)
+            while (m_asyncOperations.Find(asyncOperation => !asyncOperation.isDone) != null)
             {
-                while (!asyncOperation.isDone)
+                totalProgress = 0f;
+                foreach (AsyncOperation operation in m_asyncOperations)
                 {
-                    totalProgress = 0f;
-                    foreach (AsyncOperation operation in m_asyncOperations)
-                    {
-                        totalProgress += operation.progress / 0.9f;
-                    }
-
-                    totalProgress /= m_asyncOperations.Count;
-                    m_loadLevelProgress = totalProgress;
-                    m_bar.ChangeValue((m_loadAsyncManagerProgress + m_loadLevelProgress) / 2f);
-                    yield return null;
+                    totalProgress += operation.progress / 0.9f;
                 }
+
+                totalProgress /= m_asyncOperations.Count;
+                m_loadLevelProgress = totalProgress;
+                Commons.Logger.Log($"GetSceneLoadProgress PercentComplete All: {(m_loadAsyncManagerProgress + m_loadLevelProgress) / 2f}");
+                m_bar.ChangeValue((m_loadAsyncManagerProgress + m_loadLevelProgress) / 2f);
+                yield return null;
             }
             m_loadingScreen.SetActive(false);
         }
 
-        private IEnumerator LoadAsyncManagersCoroutine()
+        private IEnumerator GetManagerLoadProgressCoroutine()
         {
             m_loadingScreen.SetActive(true);
             while (m_asyncManagers.Find(asyncManager => asyncManager.Status == AsyncOperationStatus.None) != null)
@@ -100,13 +98,15 @@ namespace Guinea.Core
                 {
                     Commons.Logger.Assert(asyncManager.Status != AsyncOperationStatus.Failed, $"Load AsyncManager {asyncManager.DebugName} FAILED");
                     totalProgress += asyncManager.PercentComplete;
-                    yield return s_delay;
+                    // yield return s_delay;
                 }
-                totalProgress /= m_asyncOperations.Count;
+                totalProgress /= m_asyncManagers.Count;
                 m_loadAsyncManagerProgress = totalProgress;
+                Commons.Logger.Log($"LoadAsyncManagersCoroutine PercentComplete All: {(m_loadAsyncManagerProgress + m_loadLevelProgress) / 2f}");
                 m_bar.ChangeValue((m_loadAsyncManagerProgress + m_loadLevelProgress) / 2f);
-                yield return null;
+                yield return s_delay;
             }
+            yield return s_delay;
             m_loadingScreen.SetActive(false);
         }
 
@@ -114,10 +114,10 @@ namespace Guinea.Core
         {
             foreach (IAsyncManager asyncManager in m_asyncManagers)
             {
-                asyncManager.Init();
+                asyncManager.Initialize();
             }
 
-            yield return LoadAsyncManagersCoroutine();
+            yield return GetManagerLoadProgressCoroutine();
 
             // * Only call LoadLevel() from SceneIndex.TITLE_SCENE, not from other scene
             if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex == (int)SceneIndex.TITLE_SCENE)

@@ -3,25 +3,20 @@ using System.Collections.Generic;
 
 namespace Guinea.Core.Components
 {
-    public class Entity : MonoBehaviour, IWeapon
+    public class Entity : MonoBehaviour, IWeapon, IMove, IDestructible
     {
         [SerializeField] WheelCollider m_wheelColliderPrefab;
         [SerializeField] Transform m_emptyPrefab;
         [SerializeField] Transform m_wheelsCollider;
         [SerializeField] Transform m_visualWheels;
-        [SerializeField] float steerAngle;
-        [SerializeField] float motorTorque;
-        [SerializeField] Transform m_target; // TEST: IWeapon.AimTo() for multiple weapons
         [SerializeField] bool m_shoot; // TEST: IWeapon.Shoot() for multiple weapons
         List<Wheel> m_wheels;
         List<IWeapon> m_weapons;
+        [SerializeField] int m_maxHealth;// TEST: [SerializeField] for testing only 
+        [SerializeField] int m_currentHealth;// TEST: [SerializeField] for testing only 
 
-        void FixedUpdate()
-        {
-            Move(steerAngle, motorTorque, 0f);
-            AimTo(m_target.transform.position);
-            Shoot(m_shoot);
-        }
+        public int MaxHealth => m_maxHealth;
+        public int CurrentHealth => m_currentHealth;
 
         private void AddWheel(ComponentBase component)
         {
@@ -50,7 +45,6 @@ namespace Guinea.Core.Components
             }
 
             component.transform.SetParent(transform);
-
             m_weapons.Add(weapon);
         }
 
@@ -69,6 +63,17 @@ namespace Guinea.Core.Components
             }
         }
 
+        public void Init()
+        {
+            // * Setup Health
+            ComponentBase[] components = GetComponentsInChildren<ComponentBase>();
+            foreach (ComponentBase component in components)
+            {
+                m_maxHealth += component.MaxHealth;
+                component.Heal(component.MaxHealth);
+            }
+        }
+
         public void Move(float steerAngle, float motorTorque, float brakeTorque = 0f)
         {
             if (m_wheels == null) return;
@@ -77,16 +82,6 @@ namespace Guinea.Core.Components
                 wheel.Move(steerAngle, motorTorque, brakeTorque);
             }
         }
-
-        public void CleanUp()
-        {
-            Placement[] placements = GetComponentsInChildren<Placement>();
-            foreach (Placement placement in placements)
-            {
-                placement.gameObject.SetActive(false);
-            }
-        }
-
         public void Shoot(bool pressed)
         {
             if (m_weapons == null) return;
@@ -112,6 +107,16 @@ namespace Guinea.Core.Components
             {
                 weapon.AimTo(target);
             }
+        }
+
+        public void Heal(int value)
+        {
+            m_currentHealth = Mathf.Min(m_currentHealth + value, m_maxHealth);
+        }
+
+        public void GetDamage(int damage, RaycastHit hit)
+        {
+            m_currentHealth = Mathf.Max(m_currentHealth - damage, 0);
         }
     }
 }

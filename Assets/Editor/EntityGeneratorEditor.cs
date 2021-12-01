@@ -20,17 +20,13 @@ namespace Guinea.Core.Components
             EntityGenerator entityGenerator = (EntityGenerator)target;
             GUILayout.Label("<size=16><color=green>Entity Generator</color></size>", style: label_style);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Serialize"))
-            {
-                entityGenerator.Serialize();
-            }
-            if (GUILayout.Button("Deserialize"))
-            {
-                entityGenerator.Deserialize();
-            }
             if (GUILayout.Button("Generate Entity"))
             {
                 entityGenerator.Generate();
+            }
+            if (GUILayout.Button("Deserialize"))
+            {
+                entityGenerator.DeserializeEntity();
             }
             GUILayout.EndHorizontal();
         }

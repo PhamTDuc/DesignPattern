@@ -15,18 +15,14 @@ namespace Guinea.Core.Inventory
         ItemUI.Factory m_factory;
         InventoryLoader m_inventoryLoader;
         Inventory m_inventory;
-        Components.Context m_context;
 
-        AddComponentCommand.Factory m_addComponentCommandFactory;
 
         [Inject]
-        void Initialize(ItemUI.Factory factory, AddComponentCommand.Factory addComponentCommandFactory, InventoryLoader inventoryLoader, Inventory inventory, Components.Context context)
+        void Initialize(ItemUI.Factory factory, InventoryLoader inventoryLoader, Inventory inventory)
         {
             m_factory = factory;
-            m_addComponentCommandFactory = addComponentCommandFactory;
             m_inventoryLoader = inventoryLoader;
             m_inventory = inventory;
-            m_context = context;
             Commons.Logger.Log("InventoryUI::Initialize()");
         }
 
@@ -42,7 +38,6 @@ namespace Guinea.Core.Inventory
             m_inventory.OnUpdateItem -= UpdateUI;
         }
 
-        // * Will be call in Inventory::GenerateInventoryUI()
         private async void GenerateInventoryUI(Dictionary<ItemType, int> inventoryItems)
         {
             await m_inventoryLoader.Task;
@@ -56,7 +51,6 @@ namespace Guinea.Core.Inventory
             }
         }
 
-        // * For existing item
         private void UpdateUI(ItemType type, int count)
         {
             if (m_itemUIs.TryGetValue(type, out ItemUI itemUI))

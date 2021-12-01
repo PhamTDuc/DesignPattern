@@ -22,11 +22,11 @@ namespace Commons
                 UnityEngine.Debug.Log(message);
             }
         }
-        [Conditional("DEVELOPMENT")]
-        public static void Log(string format, params object[] args)
-        {
-            UnityEngine.Debug.Log(string.Format(format, args));
-        }
+        // [Conditional("DEVELOPMENT")]
+        // public static void Log(string format, params object[] args)
+        // {
+        //     UnityEngine.Debug.Log(string.Format(format, args));
+        // }
         [Conditional("DEVELOPMENT")]
         public static void LogIf(bool condition, string format, params object[] args)
         {

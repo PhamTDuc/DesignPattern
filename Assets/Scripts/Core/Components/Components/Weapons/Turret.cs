@@ -9,6 +9,8 @@ namespace Guinea.Core.Components
         [SerializeField] ParticleSystem m_muzzleFlash;
         [SerializeField] LayerMask m_shootLayer;
         [SerializeField] Transform m_aiming;
+        [SerializeField] Vector2 m_clampPitch;
+        [SerializeField] float m_smoothTime;
 
         float m_timer = 0f;
         bool m_isReloading = false;
@@ -66,7 +68,11 @@ namespace Guinea.Core.Components
 
             Vector3 pitchVector = Vector3.ProjectOnPlane(direction, m_aiming.right);
             float pitch = Vector3.SignedAngle(m_aiming.forward, pitchVector, m_aiming.right);
-            m_aiming.RotateAround(m_aiming.position, m_aiming.right, pitch); // TODO: Using clamp angles
+            // m_aiming.RotateAround(m_aiming.position, m_aiming.right, pitch); // TODO: Using clamp angles
+            pitch = Utils.ClampAngle(m_aiming.localEulerAngles.x + pitch, m_clampPitch.x, m_clampPitch.y);
+            float velocity = 0f;
+            pitch = Mathf.SmoothDampAngle(m_aiming.localEulerAngles.x, pitch, ref velocity, m_smoothTime);
+            m_aiming.localEulerAngles = new Vector3(pitch, 0f, 0f);
 
             Vector3 yawVector = Vector3.ProjectOnPlane(direction, transform.up);
             float yaw = Vector3.SignedAngle(transform.forward, yawVector, transform.up);

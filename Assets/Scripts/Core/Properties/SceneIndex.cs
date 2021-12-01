@@ -4,6 +4,7 @@ namespace Guinea.Core
     {
         TITLE_SCENE = 0,
         ENTITY_BUILDER = 1,
-        LEVEL_01 = 2,
+        TEST_SCENE = 2,
+        LEVEL_01 = 3,
     }
 }

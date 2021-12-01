@@ -5,6 +5,7 @@ namespace Guinea.Core.Components
 {
     public class SharedInteraction : MonoBehaviour
     {
+        [SerializeField] Transform m_componentsContainer;
         [SerializeField] GameObject m_gridView;
         [SerializeField] Material m_sharedObjectSelectedMaterial;
         [Range(0f, 1f)]
@@ -13,6 +14,7 @@ namespace Guinea.Core.Components
         Frame m_root = null; // * Entity Root 
         public Material SelectedMaterial => m_sharedObjectSelectedMaterial;
         public Frame Root => m_root;
+        public Transform ComponentsContainer { get; private set; } // ! Don't change this
 
         static int s_subdivisionsID = Shader.PropertyToID("Subdivisions");
         static int s_lineWidthID = Shader.PropertyToID("LineWidth");
@@ -21,6 +23,7 @@ namespace Guinea.Core.Components
 
         void Awake()
         {
+            ComponentsContainer = m_componentsContainer;
             m_gridViewMaterial = m_gridView.GetComponent<MeshRenderer>().sharedMaterial;
             m_gridViewMaterial.SetFloat(s_lineWidthID, m_lineWidth);
             HideGridView();
@@ -58,8 +61,10 @@ namespace Guinea.Core.Components
             m_gridView.gameObject.SetActive(true);
         }
 
-        public void SetEntityRoot(ComponentBase component)
+        public void SetEntityRoot(ComponentBase component, bool reset = false)
         {
+            m_root = reset ? null : m_root;
+
             if (component != null && m_root == null)
             {
                 Frame frame = component.GetComponent<Frame>();
@@ -70,7 +75,5 @@ namespace Guinea.Core.Components
                 }
             }
         }
-
-        public void ResetEntityRoot() => m_root = null;
     }
 }

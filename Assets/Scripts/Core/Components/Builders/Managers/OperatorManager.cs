@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
 namespace Guinea.Core.Components
 {
@@ -11,10 +12,19 @@ namespace Guinea.Core.Components
     {
         private static Dictionary<Type, IOperator> s_operators = new Dictionary<Type, IOperator>();
         private static Queue<Tuple<IOperator, IOperator.Exec>> s_operatorQueue = new Queue<Tuple<IOperator, IOperator.Exec>>();
-        private static Stack<IOperator> s_operatorStack = new Stack<IOperator>();
+        private static List<IOperator> s_operatorStack = new List<IOperator>();
         private static IOperator.Result s_currentOperatorResult;
         private static Context s_context;
-        private static int s_currentIndex = -1;
+        private static int s_currentIndex;
+        private static bool s_debug = false;
+
+        [Inject]
+        void Initialize(Context context)
+        {
+            Commons.Logger.Assert(s_context == null, "s_context is already initialized!");
+            s_context = context;
+            Commons.Logger.Log($"OperatorManager::Initialize() Context: {s_context}");
+        }
 
         void Awake()
         {
@@ -22,7 +32,7 @@ namespace Guinea.Core.Components
         }
 
         // * Load operators from children of OperatorManager
-        void LoadAllOperators()
+        private void LoadAllOperators()
         {
             var operators = GetComponentsInChildren<IOperator>();
             foreach (var op in operators)
@@ -31,10 +41,13 @@ namespace Guinea.Core.Components
             }
         }
 
-        public static void Initialize(Context context)
+        // * CleanUp when and preventing Assertion Error when switching Scene
+        void Destroy()
         {
-            s_context = context;
-            Commons.Logger.Log($"OperatorManager::Initialize() Context: {s_context}");
+            s_operators.Clear();
+            s_operatorQueue.Clear();
+            s_operatorStack.Clear();
+            s_context = null;
         }
 
         void OnEnable()
@@ -62,6 +75,7 @@ namespace Guinea.Core.Components
                         }
                         else
                         {
+                            Debug.Log("OperatorManager::OnNoOperatorRunning()--Execute<MoveOperator>()");
                             Execute<MoveOperator>(IOperator.Exec.INVOKE);
                         }
                     }
@@ -71,13 +85,15 @@ namespace Guinea.Core.Components
 
         private static void OnModalOperator(InputAction.CallbackContext context)
         {
-            // Commons.Logger.Log($"OperatorManager::OnModalRunning(): {s_operatorQueue.Count}-{s_currentOperatorResult}");
+            Commons.Logger.LogIf(s_debug, $"OperatorManager::OnModalRunning(): {s_operatorQueue.Count}-{s_currentOperatorResult}");
             if (s_operatorQueue.Count > 0)
             {
                 switch (s_currentOperatorResult)
                 {
                     case IOperator.Result.RUNNING_MODAL:
                         s_currentOperatorResult = s_operatorQueue.Peek().Item1.Modal(s_context, InputManager.Map.EntityBuilder);
+                        InputManager.Map.EntityBuilder.Select.Enable();
+                        InputManager.Map.EntityBuilder.Unselect.Enable();
                         break;
                     case IOperator.Result.FINISHED:
                         Finish();
@@ -93,6 +109,7 @@ namespace Guinea.Core.Components
                         break;
                 }
             }
+
         }
 
         public static void Register<T>() where T : IOperator
@@ -114,6 +131,7 @@ namespace Guinea.Core.Components
 
         public static void Execute<T>(IOperator.Exec exec)
         {
+            Debug.Log($"Add Action<{typeof(T)}> to Queue");
             IOperator op = s_operators[typeof(T)];
             s_operatorQueue.Enqueue(new Tuple<IOperator, IOperator.Exec>(op, exec));
             if (s_operatorQueue.Count == 1) Execute();
@@ -133,24 +151,28 @@ namespace Guinea.Core.Components
                     s_currentOperatorResult = op.Item1.Execute(s_context);
                 }
 
-                Commons.Logger.Log($"OperatorManager::Execute(): {op.Item1.GetType()}---Result: {s_currentOperatorResult}");
                 switch (s_currentOperatorResult)
                 {
                     case IOperator.Result.RUNNING_MODAL:
                         InputManager.Map.EntityBuilder.Get().actionTriggered -= OnNoOperatorRunning;
+                        InputManager.Map.EntityBuilder.Select.Disable();
+                        InputManager.Map.EntityBuilder.Unselect.Disable();
                         InputManager.Map.EntityBuilder.Get().actionTriggered += OnModalOperator;
                         break;
                     case IOperator.Result.FINISHED:
                         Finish();
+                        s_currentOperatorResult = IOperator.Result.PASS_THROUGH;
                         if (s_operatorQueue.Count >= 1) Execute();
                         break;
                     case IOperator.Result.CANCELLED:
-                        s_currentOperatorResult = s_operatorQueue.Dequeue().Item1.Cancel(s_context);
+                        s_operatorQueue.Dequeue().Item1.Cancel(s_context);
+                        s_currentOperatorResult = IOperator.Result.PASS_THROUGH;
                         if (s_operatorQueue.Count >= 1) Execute();
                         break;
                     default:
                         break;
                 }
+                Commons.Logger.Log($"OperatorManager::Execute(): {op.Item1.GetType()}---Result: {s_currentOperatorResult}");
             }
         }
 
@@ -158,40 +180,46 @@ namespace Guinea.Core.Components
         {
             if (s_operatorStack.Count > s_currentIndex && s_currentIndex >= 0)
             {
-                Commons.Logger.Log("OperatorManager::Undo()");
-                s_operatorStack.ElementAt(s_operatorStack.Count - s_currentIndex - 1).Cancel(s_context);
+                s_operatorStack.ElementAt(s_currentIndex).Cancel(s_context);
+                Commons.Logger.Log($"OperatorManager::Undo()--{s_operatorStack.ElementAt(s_currentIndex).GetType()}");
                 s_currentIndex--;
             }
+
         }
 
         public static void Redo()
         {
-            if (s_operatorStack.Count > s_currentIndex && s_currentIndex >= 0)
+            if (s_operatorStack.Count > s_currentIndex - 1 && s_currentIndex >= -1)
             {
-                Commons.Logger.Log("OperatorManager::Redo()");
-                s_operatorStack.ElementAt(s_operatorStack.Count - s_currentIndex - 1).Execute(s_context);
                 s_currentIndex++;
+                if (s_operatorStack.Count > 0)
+                {
+                    s_operatorStack.RemoveRange(0, s_currentIndex);
+                    if (s_operatorStack.Count > 0) s_operatorStack.ElementAt(0).Execute(s_context);
+                    s_currentIndex = 0;
+                    Commons.Logger.Log("OperatorManager::Redo()");
+                }
             }
         }
 
         private static void Finish()
         {
             var op = s_operatorQueue.Dequeue().Item1;
-            s_currentOperatorResult = op.Execute(s_context);
-            if (s_operatorStack.Count - 1 != s_currentIndex)
+            op.Execute(s_context);
+            if (s_currentIndex != s_operatorStack.Count - 1)
             {
                 s_operatorStack.Clear();
-                s_currentIndex = -1;
             }
-            s_operatorStack.Push((IOperator)op.Clone());
-            s_currentIndex++;
+            s_operatorStack.Add((IOperator)op.Clone());
+            s_currentIndex = s_operatorStack.Count - 1;
+            Debug.Log($"Add to Stack: {s_operatorStack.Count} -- {op.GetType()}");
         }
 
         public static void Execute<T>(IOperator.Exec exec, params object[] args) where T : IOperator
         {
             IOperator op = s_operators[typeof(T)];
             var opProperties = op.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).Where(field => field.GetCustomAttributes(typeof(OpProperty), false).Length > 0).ToArray();
-            Commons.Logger.Assert(args.Length == opProperties.Length, "OperatorManager::TestExecute(): Args.Length must be equal to opProperties.Length");
+            Commons.Logger.Assert(args.Length == opProperties.Length, "OperatorManager::Execute(): Args.Length must be equal to opProperties.Length");
             for (int i = 0; i < opProperties.Length; i++)
             {
                 opProperties[i].SetValue(op, args[i]);

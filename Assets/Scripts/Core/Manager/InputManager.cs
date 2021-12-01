@@ -13,7 +13,7 @@ namespace Guinea.Core
         private static HashSet<InputActionMap> s_enabledInputActionMap = new HashSet<InputActionMap>();
         private static List<Action<InputAction.CallbackContext>> m_backKeyCallbackList = new List<Action<InputAction.CallbackContext>>();
 
-        public static void Init()
+        public static void Initialize()
         {
             // s_inputAction.Enable();
             s_inputAction.Disable();
@@ -47,19 +47,19 @@ namespace Guinea.Core
             m_backKeyCallbackList.LastOrDefault()?.Invoke(context);
         }
 
-        public static void SetActionMap(InputActionMap actionMap, bool enabled)
-        {
-            if (enabled)
-            {
-                s_enabledInputActionMap.Add(actionMap);
-                actionMap.Enable();
-            }
-            else
-            {
-                s_enabledInputActionMap.Remove(actionMap);
-                actionMap.Disable();
-            }
-        }
+        // public static void SetActionMap(InputActionMap actionMap, bool enabled)
+        // {
+        //     if (enabled)
+        //     {
+        //         s_enabledInputActionMap.Add(actionMap);
+        //         actionMap.Enable();
+        //     }
+        //     else
+        //     {
+        //         s_enabledInputActionMap.Remove(actionMap);
+        //         actionMap.Disable();
+        //     }
+        // }
 
         public static void SetEnableExceptUI(bool enabled)
         {

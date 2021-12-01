@@ -4,13 +4,16 @@ using UnityEngine;
 public class Destructible : MonoBehaviour, IDestructible
 {
     [SerializeField] int m_maxHealth;
+    [SerializeField] int m_currentHealth;
     [SerializeField] GameObject m_impact;
     [SerializeField] GameObject m_destroyedVersion;
     [SerializeField] bool m_destroyParent;
     [SerializeField] bool m_canDestroy;
 
-    [SerializeField] int m_currentHealth = 0;
     IDestructible m_rootParent;
+
+    public int MaxHealth => m_maxHealth;
+    public int CurrentHealth => m_currentHealth;
 
     void Awake()
     {

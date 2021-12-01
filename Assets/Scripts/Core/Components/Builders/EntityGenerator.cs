@@ -7,15 +7,10 @@ using Guinea.Core.Inventory;
 
 namespace Guinea.Core.Components
 {
-    [RequireComponent(typeof(Entity))]
     public class EntityGenerator : MonoBehaviour
     {
-        [TextArea(2, 10)]
-        [SerializeField] string m_json;
-        [SerializeField] Entity m_entity;
+        [SerializeField] Entity m_entityPrefab;
 
-
-        Node m_node;
         SharedInteraction m_sharedInteraction;
         InventoryLoader m_inventoryLoader;
         Inventory.Inventory m_inventory;
@@ -26,56 +21,69 @@ namespace Guinea.Core.Components
             m_sharedInteraction = sharedInteraction;
             m_inventoryLoader = inventoryLoader;
             m_inventory = inventory;
+            Commons.Logger.Log("EntityGenerator::Initialize()");
+        }
+
+        void Start()
+        {
+            DeserializeEntity();
         }
 
         public void Generate()
         {
             ComponentBase root = m_sharedInteraction.Root?.GetComponent<ComponentBase>();
-            if (root != null)
+            Commons.Logger.Assert(m_sharedInteraction.ComponentsContainer.childCount > 0, "ComponentsContainer must have at least one ComponentBase!");
+            if (root != null && root.GetEnumerator() != null)
             {
-                m_entity.transform.position = root.transform.position;
-                m_entity.transform.rotation = root.transform.rotation;
-                root.transform.SetParent(m_entity.transform);
-                WalkInComponentBase(root);
-                m_entity.CleanUp();
-                Commons.Logger.Log("Generate Entity DONE!!");
+                SerializeEntity(root);
+                // Vector3 offset = 0.1f * Vector3.up; // * Fix issue when WheelCollider is too close to the ground
+                Entity entity = Instantiate(m_entityPrefab, root.transform.position, root.transform.rotation);
+                root.transform.SetParent(entity.transform);
+                WalkInComponentBase(root, entity);
+                entity.Init();
+                RemoveUnattachedComponents();
+                Commons.Logger.Log("EntityGenerator::Generate(): Generate Entity DONE!!");
             }
             else
             {
-                Commons.Logger.LogWarning("No Root Frame SPECIFIED!!");
+                Commons.Logger.LogWarning("EntityGenerator::Generate(): No root available or no components attached to root!");
             }
         }
 
-        public void Serialize()
+        public void SerializeEntity(ComponentBase root)
         {
-            m_node = GenerateNode();
-            m_json = JsonHandler.SerializeObject(m_node);
+            Node node = GenerateNode(root);
+            string entityJson = JsonHandler.SerializeObject(node);
+            Commons.Logger.Log("Entity Json: " + entityJson);
+            m_inventory.SaveToEntityJson(entityJson);
         }
 
-        public void Deserialize()
+        public void DeserializeEntity()
         {
-            m_node = JsonHandler.Deserialize<Node>(m_json);
-            ComponentBase root;
-            WalkInNode(m_node, out root);
-            m_sharedInteraction.ResetEntityRoot();
-            m_sharedInteraction.SetEntityRoot(root);
+            if (!String.IsNullOrEmpty(m_inventory.EntityJson))
+            {
+                Node node = JsonHandler.Deserialize<Node>(m_inventory.EntityJson);
+                ComponentBase root;
+                WalkInNode(node, out root);
+                m_sharedInteraction.SetEntityRoot(root, true);
+            }
         }
 
-        private void WalkInComponentBase(ComponentBase component)
+        private void WalkInComponentBase(ComponentBase component, Entity entity)
         {
-            if (component.GetEnumerator() != null) // * Component can have no children
+            if (component.HasChildren) // * Component can have no children
             {
                 foreach (ComponentBase child in component)
                 {
-                    WalkInComponentBase(child);
-                    m_entity.HandleComponent(child);
+                    WalkInComponentBase(child, entity);
+                    entity.HandleComponent(child);
                 }
             }
+            component.CleanUp();
         }
 
-        private Node GenerateNode()
+        private Node GenerateNode(ComponentBase root)
         {
-            ComponentBase root = m_sharedInteraction.Root?.GetComponent<ComponentBase>();
             Node root_node = new Node(root.ItemType, root.transform.position, root.transform.rotation);
             WalkInComponentBaseNode(root, root_node);
             return root_node;
@@ -99,17 +107,14 @@ namespace Guinea.Core.Components
             component = null;
             if (Enum.TryParse(node.name, out ItemType itemType))
             {
-                if (m_inventory.Use(itemType))
+                component = Instantiate(m_inventoryLoader.Items[itemType].obj, node.position, node.rotation, m_sharedInteraction.ComponentsContainer).GetComponent<ComponentBase>();
+                if (node.children != null)
                 {
-                    component = Instantiate(m_inventoryLoader.Items[itemType].obj, node.position, node.rotation).GetComponent<ComponentBase>();
-                    if (node.children != null)
+                    foreach (Node child in node.children)
                     {
-                        foreach (Node child in node.children)
-                        {
-                            ComponentBase child_component;
-                            WalkInNode(child, out child_component);
-                            component.AddComponent(child_component);
-                        }
+                        ComponentBase child_component;
+                        WalkInNode(child, out child_component);
+                        component.AddComponent(child_component);
                     }
                 }
             }
@@ -117,6 +122,35 @@ namespace Guinea.Core.Components
             {
                 Debug.LogError($"Fail to Parse {node.name} to enum type<{typeof(ItemType)}>");
             }
+        }
+
+        private void RemoveUnattachedComponents()
+        {
+            ComponentBase[] components = m_sharedInteraction.ComponentsContainer.GetComponentsInChildren<ComponentBase>();
+            foreach (ComponentBase component in components)
+            {
+                switch (component.Type)
+                {
+                    case ComponentType.FRAME:
+                        if (component.GetEnumerator() == null)
+                        {
+                            DestroyComponent(component);
+                        }
+                        break;
+                    default:
+                        if (!component.IsAttached)
+                        {
+                            DestroyComponent(component);
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void DestroyComponent(ComponentBase component)
+        {
+            m_inventory.Add(component.ItemType);
+            Destroy(component.gameObject);
         }
     }
 

@@ -77,3 +77,5 @@ MonoBehaviour:
   m_audioManagerPrefab: {fileID: 1942943492231164088, guid: 0b3daae71d1a96047bcb446f4b46ecb6, type: 3}
   m_levelManagerPrefab: {fileID: 1738268627006675776, guid: 7d08cff5edb811343b82d6397185a7bb, type: 3}
   m_inventoryLoaderPrefab: {fileID: 5735058596081263497, guid: 99199dac263c1f641aba5d94fdddcbb2, type: 3}
+  m_inventoryPrefab: {fileID: 119757441956688484, guid: 3be6962d3d9a72c48a91152bde8d01f8, type: 3}
+  m_gameManagerPrefab: {fileID: 6455345420193973910, guid: 8cad2e837ac3e384fa33b1f1eeed0e35, type: 3}
